@@ -7,15 +7,15 @@ variables, nested functions, and operator precedence.
 
 # Features
 
-✅ Arbitrary precision decimal arithmetic using shopspring/decimal
-✅ Full operator precedence support (+, -, *, /, %, ^)
-✅ Variables (val1, price, tax_rate, etc.)
-✅ Nested function calls (sum(1, min(5, 10), 3*val))
-✅ Built-in functions: sum, min, max, abs, round, ceil, floor
-✅ Custom functions registration
-✅ RPN compilation for fast repeated evaluations
-✅ Detailed error messages with position indicators
-✅ Zero dependencies beyond shopspring/decimal
+* ✅ Arbitrary precision decimal arithmetic using shopspring/decimal
+* ✅ Full operator precedence support (+, -, *, /, %, ^)
+* ✅ Variables (val1, price, tax_rate, etc.)
+* ✅ Nested function calls (sum(1, min(5, 10), 3*val))
+* ✅ Built-in functions: sum, min, max, abs, round, ceil, floor
+* ✅ Custom functions registration
+* ✅ RPN compilation for fast repeated evaluations
+* ✅ Detailed error messages with position indicators
+* ✅ Zero dependencies beyond shopspring/decimal
 
 # Installation
 
