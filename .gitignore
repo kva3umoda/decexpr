@@ -1,0 +1,10 @@
+
+.idea/
+
+tmp/
+
+*.prof
+
+*.test
+
+*.out
