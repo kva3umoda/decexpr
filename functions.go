@@ -16,7 +16,12 @@ var functions = map[string]FuncInfo{
 	"max":   {Call: Max, Args: -1},
 	"min":   {Call: Min, Args: -1},
 	"sum":   {Call: Sum, Args: -1},
-	"round": {Call: Round, Args: -1},
+	"avg":   {Call: Avg, Args: -1},
+	"round": {Call: Round, Args: 2},
+	"floor": {Call: Floor, Args: 1},
+	"ceil":  {Call: Ceil, Args: 1},
+	"abs":   {Call: Abs, Args: 1},
+	"trunc": {Call: Trunc, Args: 2},
 }
 
 func Max(vals ...decimal.Decimal) (decimal.Decimal, error) {
@@ -44,9 +49,62 @@ func Sum(vals ...decimal.Decimal) (decimal.Decimal, error) {
 }
 
 func Round(vals ...decimal.Decimal) (decimal.Decimal, error) {
-	if len(vals) != 2 {
+	switch len(vals) {
+	case 1:
+		return vals[0].Round(0), nil
+	case 2:
+		if vals[1].Exponent() < 0 {
+			return decimal.Zero, errors.New("invalid second of arguments")
+		}
+
+		return vals[0].Round(int32(vals[1].IntPart())), nil
+	default:
+		return decimal.Zero, errors.New("invalid number of arguments")
+	}
+}
+
+func Abs(vals ...decimal.Decimal) (decimal.Decimal, error) {
+	if len(vals) != 1 {
 		return decimal.Zero, errors.New("invalid number of arguments")
 	}
 
-	return vals[0].Round(int32(vals[1].IntPart())), nil
+	return vals[0].Abs(), nil
+}
+
+func Floor(vals ...decimal.Decimal) (decimal.Decimal, error) {
+	if len(vals) != 1 {
+		return decimal.Zero, errors.New("invalid number of arguments")
+	}
+
+	return vals[0].Floor(), nil
+}
+
+func Ceil(vals ...decimal.Decimal) (decimal.Decimal, error) {
+	if len(vals) != 1 {
+		return decimal.Zero, errors.New("invalid number of arguments")
+	}
+	return vals[0].Ceil(), nil
+}
+
+func Trunc(vals ...decimal.Decimal) (decimal.Decimal, error) {
+	switch len(vals) {
+	case 1:
+		return vals[0].Truncate(0), nil
+	case 2:
+		if vals[1].Exponent() < 0 {
+			return decimal.Zero, errors.New("invalid second of arguments")
+		}
+
+		return vals[0].Truncate(int32(vals[1].IntPart())), nil
+	default:
+		return decimal.Zero, errors.New("invalid number of arguments")
+	}
+}
+
+func Avg(vals ...decimal.Decimal) (decimal.Decimal, error) {
+	if len(vals) == 0 {
+		return decimal.Zero, nil
+	}
+
+	return decimal.Avg(vals[0], vals[1:]...), nil
 }

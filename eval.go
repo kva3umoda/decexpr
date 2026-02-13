@@ -48,6 +48,13 @@ func NewExpressionEvaluator(useCache bool, functions map[string]FuncInfo) *Expre
 	}
 }
 
+func (e *ExpressionEvaluator) ClearCache() {
+	e.lock.RLock()
+	defer e.lock.RUnlock()
+
+	e.cache.Clear()
+}
+
 func (e *ExpressionEvaluator) ParseAndCache(exp string) error {
 	e.lock.RLock()
 	defer e.lock.RUnlock()
@@ -87,7 +94,7 @@ func (e *ExpressionEvaluator) Eval(exp string, identValue map[string]decimal.Dec
 	return res, nil
 }
 
-func (e *ExpressionEvaluator) RegisterFunction(name string, funcCall Function) error {
+func (e *ExpressionEvaluator) AddFunc(name string, funcCall Function) error {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -223,6 +230,6 @@ func Eval(exp string, identValue map[string]decimal.Decimal) (decimal.Decimal, e
 	return Default().Eval(exp, identValue)
 }
 
-func RegisterFunction(name string, funcCall Function) error {
-	return Default().RegisterFunction(name, funcCall)
+func AddFunc(name string, funcCall Function) error {
+	return Default().AddFunc(name, funcCall)
 }

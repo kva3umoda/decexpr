@@ -9,6 +9,7 @@ type cacheItem struct {
 type EvalCache interface {
 	Put(key string, items []*RPNItem)
 	Get(key string) (items []*RPNItem, found bool)
+	Clear()
 }
 
 var _ EvalCache = (*EvalMapCache)(nil)
@@ -45,6 +46,13 @@ func (ec *EvalMapCache) Get(key string) (items []*RPNItem, found bool) {
 	return item.Items, true
 }
 
+func (ec *EvalMapCache) Clear() {
+	ec.mutex.Lock()
+	defer ec.mutex.Unlock()
+
+	clear(ec.cache)
+}
+
 var _ EvalCache = (*EvalMapCache)(nil)
 
 type EvalNoopCache struct{}
@@ -58,3 +66,5 @@ func (*EvalNoopCache) Put(key string, items []*RPNItem) {}
 func (*EvalNoopCache) Get(key string) (items []*RPNItem, found bool) {
 	return nil, false
 }
+
+func (*EvalNoopCache) Clear() {}

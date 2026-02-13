@@ -30,7 +30,7 @@ func TestEval(t *testing.T) {
 		{exp: "5+5*5", idents: map[string]decimal.Decimal{}, result: "30"},
 		{exp: "(5+5)*5", idents: map[string]decimal.Decimal{}, result: "50"},
 		{exp: "round(5.3555, 2)", idents: map[string]decimal.Decimal{}, result: "5.36"},
-		{exp: "round(5.3555, 2)", idents: map[string]decimal.Decimal{}, result: "5.36"},
+		{exp: "trunc(5.3555, 2)", idents: map[string]decimal.Decimal{}, result: "5.35"},
 	}
 	for _, test := range tests {
 		t.Run(test.exp, func(t *testing.T) {
@@ -42,9 +42,9 @@ func TestEval(t *testing.T) {
 }
 
 func TestDecimal(t *testing.T) {
-	val := decimal.NewFromFloat(3.5612)
-
-	fmt.Println(val.Round(2).String())
+	val := decimal.NewFromFloat(3123.5612)
+	fmt.Println(val.Round(1).String())
+	fmt.Println(val.Truncate(1).String())
 
 	fmt.Println(true)
 }
