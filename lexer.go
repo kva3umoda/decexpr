@@ -134,30 +134,33 @@ func (l *Lexer) readIdentifier() Token {
 func (l *Lexer) readNumber() Token {
 	beginPos := l.position
 	exp := int16(0)
-	decimalFound := false
+	///decimalFound := false
+
 	digits := make([]byte, 0, defaultNumberSize)
+	tokenType := TokenIntNumber
 
 	for isDigit(l.ch) || isDot(l.ch) {
 		if l.ch == '.' {
-			if decimalFound {
+			if tokenType == TokenFloatNumber {
 				break
 			}
 
-			decimalFound = true
+			tokenType = TokenFloatNumber
 			l.nextChar()
 
 			continue
 		}
 
 		digits = append(digits, l.ch)
-		if decimalFound {
+
+		if tokenType == TokenFloatNumber {
 			exp++
 		}
 
 		l.nextChar()
 	}
 
-	tok := newToken(TokenNumber, string(digits), beginPos)
+	tok := newToken(TokenFloatNumber, string(digits), beginPos)
 	tok.Exp = exp
 
 	return tok

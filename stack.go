@@ -117,7 +117,7 @@ func (s *NumberStack) PopN(n int) ([]decimal.Decimal, error) {
 	}
 
 	res := make([]decimal.Decimal, 0, n)
-	for i := len(s.numbers) - 1; i >= len(s.numbers)-n; i-- {
+	for i := len(s.numbers) - n; i < len(s.numbers); i++ {
 		res = append(res, s.numbers[i])
 	}
 

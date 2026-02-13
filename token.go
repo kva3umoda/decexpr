@@ -5,7 +5,8 @@ type TokenType byte
 const (
 	TokenIllegal TokenType = iota + 1
 	TokenEOF
-	TokenNumber
+	TokenIntNumber
+	TokenFloatNumber
 	TokenOperator
 	TokenUnaryOperator
 	TokenIdent
@@ -21,8 +22,10 @@ func (tt TokenType) String() string {
 		return "Illegal"
 	case TokenEOF:
 		return "EOF"
-	case TokenNumber:
-		return "Number"
+	case TokenIntNumber:
+		return "IntNumber"
+	case TokenFloatNumber:
+		return "FloatNumber"
 	case TokenUnaryOperator:
 		return "UnaryOperator"
 	case TokenOperator:

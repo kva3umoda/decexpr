@@ -1,16 +1,30 @@
 package decexpr
 
 import (
+	"sync"
+	"sync/atomic"
+
 	pkgErrors "github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 )
 
-var defaultEval = NewExpressionEvaluator(true, functions)
+var defaultEval atomic.Pointer[ExpressionEvaluator]
+
+func init() {
+	defaultEval.Store(NewExpressionEvaluator(true, functions))
+}
+
+func Default() *ExpressionEvaluator { return defaultEval.Load() }
+
+func SetDefault(eval *ExpressionEvaluator) {
+	defaultEval.Store(eval)
+}
 
 type ExpressionEvaluator struct {
 	functions map[string]FuncInfo
 	parser    *Parser
 	cache     EvalCache
+	lock      sync.RWMutex
 }
 
 func NewExpressionEvaluator(useCache bool, functions map[string]FuncInfo) *ExpressionEvaluator {
@@ -35,6 +49,9 @@ func NewExpressionEvaluator(useCache bool, functions map[string]FuncInfo) *Expre
 }
 
 func (e *ExpressionEvaluator) ParseAndCache(exp string) error {
+	e.lock.RLock()
+	defer e.lock.RUnlock()
+
 	_, ok := e.cache.Get(exp)
 	if !ok {
 		items, err := e.parser.Parse(exp)
@@ -49,6 +66,9 @@ func (e *ExpressionEvaluator) ParseAndCache(exp string) error {
 }
 
 func (e *ExpressionEvaluator) Eval(exp string, identValue map[string]decimal.Decimal) (res decimal.Decimal, err error) {
+	e.lock.RLock()
+	defer e.lock.RUnlock()
+
 	items, ok := e.cache.Get(exp)
 	if !ok {
 		items, err = e.parser.Parse(exp)
@@ -67,13 +87,30 @@ func (e *ExpressionEvaluator) Eval(exp string, identValue map[string]decimal.Dec
 	return res, nil
 }
 
+func (e *ExpressionEvaluator) RegisterFunction(name string, funcCall Function) error {
+	e.lock.Lock()
+	defer e.lock.Unlock()
+
+	_, ok := e.functions[name]
+	if ok {
+		return pkgErrors.Errorf("function %s already registered", name)
+	}
+
+	e.functions[name] = FuncInfo{
+		Call: funcCall,
+		Args: -1,
+	}
+
+	return nil
+}
+
 func (e *ExpressionEvaluator) evalRPN(items []*RPNItem, identValue map[string]decimal.Decimal) (decimal.Decimal, error) {
 	stack := NewNumberStack(len(items))
 
 	for len(items) > 0 {
 		item := items[0]
 		switch item.Type {
-		case TokenNumber:
+		case TokenFloatNumber:
 			stack.Push(item.Number)
 		case TokenIdent:
 			value, ok := identValue[item.Literal]
@@ -183,5 +220,9 @@ func (e *ExpressionEvaluator) evalRPN(items []*RPNItem, identValue map[string]de
 }
 
 func Eval(exp string, identValue map[string]decimal.Decimal) (decimal.Decimal, error) {
-	return defaultEval.Eval(exp, identValue)
+	return Default().Eval(exp, identValue)
+}
+
+func RegisterFunction(name string, funcCall Function) error {
+	return Default().RegisterFunction(name, funcCall)
 }

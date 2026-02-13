@@ -37,7 +37,7 @@ func (p *Parser) Parse(exp string) ([]*RPNItem, error) {
 		}
 
 		switch token.Type {
-		case TokenNumber, TokenIdent:
+		case TokenFloatNumber, TokenIdent:
 			output = append(output, newItem)
 		case TokenOperator, TokenUnaryOperator:
 			for itemStack.Len() > 0 {

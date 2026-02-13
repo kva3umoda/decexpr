@@ -30,6 +30,7 @@ func TestEval(t *testing.T) {
 		{exp: "5+5*5", idents: map[string]decimal.Decimal{}, result: "30"},
 		{exp: "(5+5)*5", idents: map[string]decimal.Decimal{}, result: "50"},
 		{exp: "round(5.3555, 2)", idents: map[string]decimal.Decimal{}, result: "5.36"},
+		{exp: "round(5.3555, 2)", idents: map[string]decimal.Decimal{}, result: "5.36"},
 	}
 	for _, test := range tests {
 		t.Run(test.exp, func(t *testing.T) {
@@ -44,6 +45,8 @@ func TestDecimal(t *testing.T) {
 	val := decimal.NewFromFloat(3.5612)
 
 	fmt.Println(val.Round(2).String())
+
+	fmt.Println(true)
 }
 
 // BenchmarkEval-12    	  400081	      2658 ns/op	    3848 B/op	      47 allocs/op
@@ -54,7 +57,7 @@ func TestDecimal(t *testing.T) {
 // BenchmarkEval-12    	  413218	      2667 ns/op	    3160 B/op	      55 allocs/op
 // BenchmarkEval-12    	  425035	      2550 ns/op	    3144 B/op	      54 allocs/op
 // BenchmarkEval-12    	  462590	      2398 ns/op	    2280 B/op	      54 allocs/op
-// BenchmarkEval-12    	  555511	      1901 ns/op	    1464 B/op	      35 allocs/op
+// BenchmarkEval-12    	  555511	      1895 ns/op	    1464 B/op	      35 allocs/op
 func BenchmarkEval(b *testing.B) {
 	b.StopTimer()
 	values := map[string]decimal.Decimal{
@@ -65,7 +68,7 @@ func BenchmarkEval(b *testing.B) {
 
 	//exp := "sum(1, max(val1, 100), min(val2, 100)) * 20 "
 	exp := "20 * 30.5 + sum(13, val1, val2, val3)/(sum(1, max(val1, 100), min(val2, 100)))"
-	err := defaultEval.ParseAndCache(exp)
+	err := Default().ParseAndCache(exp)
 	if err != nil {
 		b.Fatal(err)
 	}

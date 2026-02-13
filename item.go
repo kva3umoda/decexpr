@@ -30,7 +30,7 @@ func NewRPNItem(token Token) (*RPNItem, error) {
 	switch token.Type {
 	case TokenIdent, TokenEOF:
 		item.Priority = 0
-	case TokenNumber:
+	case TokenFloatNumber:
 		value, err := strconv.ParseInt(token.Literal, 10, 64)
 		if err != nil {
 			return item, err
@@ -38,6 +38,13 @@ func NewRPNItem(token Token) (*RPNItem, error) {
 
 		item.Number = decimal.New(value, -int32(token.Exp))
 		item.Priority = 0
+	case TokenIntNumber:
+		value, err := strconv.ParseInt(token.Literal, 10, 64)
+		if err != nil {
+			return item, err
+		}
+
+		item.Number = decimal.NewFromInt(value)
 	case TokenFunction:
 		item.Priority = 5
 	case TokenUnaryOperator:

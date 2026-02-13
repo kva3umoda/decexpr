@@ -27,7 +27,7 @@ func TestNumberStack(t *testing.T) {
 
 	vals, err = stack.PopN(3)
 	assert.NoError(t, err)
-	assert.EqualValues(t, []decimal.Decimal{val4, val3, val2}, vals)
+	assert.EqualValues(t, []decimal.Decimal{val2, val3, val4}, vals)
 	assert.EqualValues(t, []decimal.Decimal{val1}, stack.numbers)
 
 	vals, err = stack.PopN(1)
